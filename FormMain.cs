@@ -9,9 +9,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Course_Calendar {
-  public partial class Form1 : Form {
-    public Form1() {
+  public partial class FormMain : Form {
+    public FormMain() {
       InitializeComponent();
+    }
+
+    private void uxDateTimePickerTimes_DropDown(object sender, EventArgs e) {
+
     }
   }
 }
