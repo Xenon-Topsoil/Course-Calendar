@@ -128,7 +128,6 @@
       this.uxDateTimePickerStartTime.Size = new System.Drawing.Size(120, 20);
       this.uxDateTimePickerStartTime.TabIndex = 5;
       this.uxDateTimePickerStartTime.Value = new System.DateTime(2022, 1, 27, 14, 0, 0, 0);
-      this.uxDateTimePickerStartTime.DropDown += new System.EventHandler(this.uxDateTimePickerTimes_DropDown);
       // 
       // label4
       // 
@@ -151,7 +150,6 @@
       this.uxDateTimePickerEndTime.Size = new System.Drawing.Size(120, 20);
       this.uxDateTimePickerEndTime.TabIndex = 7;
       this.uxDateTimePickerEndTime.Value = new System.DateTime(2022, 1, 27, 16, 0, 0, 0);
-      this.uxDateTimePickerEndTime.DropDown += new System.EventHandler(this.uxDateTimePickerTimes_DropDown);
       // 
       // label5
       // 
@@ -186,6 +184,7 @@
       this.uxButtonAddToCalendar.TabIndex = 10;
       this.uxButtonAddToCalendar.Text = "Add to calendar";
       this.uxButtonAddToCalendar.UseVisualStyleBackColor = true;
+      this.uxButtonAddToCalendar.Click += new System.EventHandler(this.uxButtonAddToCalendar_Click);
       // 
       // FormMain
       // 
@@ -195,6 +194,7 @@
       this.Controls.Add(this.uxTableLayoutPanelMain);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
       this.Name = "FormMain";
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Course Calendar";
       this.uxTableLayoutPanelMain.ResumeLayout(false);
       this.uxTableLayoutPanelMain.PerformLayout();
