@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Course Calendar", "Course Calendar.csproj", "{0A91E597-76E1-45C8-B1E7-0982DD8EF501}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Course Calendar Setup", "..\Course Calendar Setup\Course Calendar Setup.vdproj", "{BB5544B1-7340-405E-ADE1-C8935AEB5CFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,8 @@ Global
 		{0A91E597-76E1-45C8-B1E7-0982DD8EF501}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A91E597-76E1-45C8-B1E7-0982DD8EF501}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A91E597-76E1-45C8-B1E7-0982DD8EF501}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB5544B1-7340-405E-ADE1-C8935AEB5CFA}.Debug|Any CPU.ActiveCfg = Debug
+		{BB5544B1-7340-405E-ADE1-C8935AEB5CFA}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

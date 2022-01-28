@@ -23,6 +23,8 @@
     /// the contents of this method with the code editor.
     /// </summary>
     private void InitializeComponent() {
+      this.components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
       this.uxTableLayoutPanelMain = new System.Windows.Forms.TableLayoutPanel();
       this.label1 = new System.Windows.Forms.Label();
       this.uxTextBoxCourseName = new System.Windows.Forms.TextBox();
@@ -35,6 +37,7 @@
       this.label5 = new System.Windows.Forms.Label();
       this.uxNumericUpDownNumberOfWeeks = new System.Windows.Forms.NumericUpDown();
       this.uxButtonAddToCalendar = new System.Windows.Forms.Button();
+      this.uxToolTipMain = new System.Windows.Forms.ToolTip(this.components);
       this.uxTableLayoutPanelMain.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.uxNumericUpDownNumberOfWeeks)).BeginInit();
       this.SuspendLayout();
@@ -78,6 +81,7 @@
       this.label1.Size = new System.Drawing.Size(72, 13);
       this.label1.TabIndex = 0;
       this.label1.Text = "Course name:";
+      this.uxToolTipMain.SetToolTip(this.label1, "The name of the course. The app will append \" - Week n\" for each week.");
       // 
       // uxTextBoxCourseName
       // 
@@ -86,6 +90,7 @@
       this.uxTextBoxCourseName.Name = "uxTextBoxCourseName";
       this.uxTextBoxCourseName.Size = new System.Drawing.Size(250, 20);
       this.uxTextBoxCourseName.TabIndex = 1;
+      this.uxToolTipMain.SetToolTip(this.uxTextBoxCourseName, "The name of the course. The app will append \" - Week n\" for each week.");
       // 
       // label2
       // 
@@ -183,6 +188,7 @@
       this.uxButtonAddToCalendar.Size = new System.Drawing.Size(92, 23);
       this.uxButtonAddToCalendar.TabIndex = 10;
       this.uxButtonAddToCalendar.Text = "Add to calendar";
+      this.uxToolTipMain.SetToolTip(this.uxButtonAddToCalendar, "Generate and run an iCalendar file (.ics) for import into Outlook.");
       this.uxButtonAddToCalendar.UseVisualStyleBackColor = true;
       this.uxButtonAddToCalendar.Click += new System.EventHandler(this.uxButtonAddToCalendar_Click);
       // 
@@ -193,6 +199,7 @@
       this.ClientSize = new System.Drawing.Size(400, 194);
       this.Controls.Add(this.uxTableLayoutPanelMain);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "FormMain";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Course Calendar";
@@ -218,6 +225,7 @@
     private System.Windows.Forms.Label label5;
     private System.Windows.Forms.NumericUpDown uxNumericUpDownNumberOfWeeks;
     private System.Windows.Forms.Button uxButtonAddToCalendar;
+    private System.Windows.Forms.ToolTip uxToolTipMain;
   }
 }
 

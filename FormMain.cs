@@ -14,6 +14,7 @@ namespace Course_Calendar {
 
     public FormMain() {
       InitializeComponent();
+      uxDateTimePickerStartDate.Value = DateTime.Now;
     }
 
     private void uxButtonAddToCalendar_Click(object sender, EventArgs e) {
