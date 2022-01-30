@@ -18,10 +18,22 @@ namespace Course_Calendar {
     }
 
     private void uxButtonAddToCalendar_Click(object sender, EventArgs e) {
-      CourseGenerator courseGenerator = new CourseGenerator();
+      // Check the course name.
+      if (string.IsNullOrEmpty(uxTextBoxCourseName.Text)) {
+        MessageBoxExt.ShowError("Tou must supply a course name.");
+        return;
+      }
+
+      // The course start is the date value from the course start date picker, plus the time value from the course start time picker.
       DateTime start = uxDateTimePickerStartDate.Value.Date + uxDateTimePickerStartTime.Value.TimeOfDay;
+
+      // The course end is the date value from the course start date picker, plus the time value from the course end time picker.
       DateTime end = uxDateTimePickerStartDate.Value.Date + uxDateTimePickerEndTime.Value.TimeOfDay;
-      bool success = courseGenerator.GenerateCourseCalendar(uxTextBoxCourseName.Text, start, end, (int)uxNumericUpDownNumberOfWeeks.Value);
+
+      // Generate and shell to a temp iCalendar file, for Outlook to import.
+      bool success = CourseGenerator.GenerateCourseCalendar(uxTextBoxCourseName.Text, start, end, (int)uxNumericUpDownNumberOfWeeks.Value);
+
+      // Show success or fail message.
       if (success) {
         MessageBoxExt.ShowInformation("Course event file created and run.");
       }

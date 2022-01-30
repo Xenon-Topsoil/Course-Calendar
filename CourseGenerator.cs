@@ -1,28 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace Course_Calendar {
-  internal class CourseGenerator {
+  internal static class CourseGenerator {
 
-    private const string _dateTimeFormat = "yyyyMMddTHHmmss";
+    // We are assuming that the course runs weekly.
     private readonly static TimeSpan _oneWeek = TimeSpan.FromDays(7);
 
-    public bool GenerateCourseCalendar(string courseName, DateTime start, DateTime end, int numberOfWeeks) {
+    /// <summary>
+    /// Create a event series for a weekly course by generating and shelling to a temporary iCalendar file for Outlook to import from.
+    /// </summary>
+    /// <param name="courseName">Course name to use as the event summary. It gets appended with week number information.</param>
+    /// <param name="start">Course start date and time.</param>
+    /// <param name="end">Course end date and time.</param>
+    /// <param name="numberOfWeeks">Course length in weeks.</param>
+    /// <returns>True on success.</returns>
+    public static bool GenerateCourseCalendar(string courseName, DateTime start, DateTime end, int numberOfWeeks) {
+      // We are creating a temp ics file using the (sanitized) course name.
       string filename = Path.Combine(Path.GetTempPath(), $"{SanitizeFilename(courseName, '_')}.ics");
+
+      // Get the current timestamp to use for all the events.
       DateTime timestamp = DateTime.Now;
+
+      // Use a GUID as the unique ID for the event series.
       Guid guid = Guid.NewGuid();
 
-      //using (StringWriter writer = new StringWriter()) {
       using (StreamWriter writer = new StreamWriter(filename)) {
+        // Write the calendar start lines. For the Product ID we use the application product name and the first two parts of the product version.
         writer.WriteLine("BEGIN:VCALENDAR");
         writer.WriteLine("VERSION:2.0");
-        writer.WriteLine("CourseGenerator");
+        string[] productVersion = Application.ProductVersion.Split('.');
+        writer.WriteLine("PRODID:{0} {1}.{2}", Application.ProductName, productVersion[0], productVersion[1]);
+
+        // Write the event series lines.
         WriteFirstEvent(writer, timestamp, guid, start, end, courseName, 1, numberOfWeeks);
+
+        // For all the individual events except the first, write overriding event lines to modify the summary.
         start += _oneWeek;
         end += _oneWeek;
         for (int weekNumber = 2; weekNumber <= numberOfWeeks; weekNumber++) {
@@ -30,19 +46,26 @@ namespace Course_Calendar {
           start += _oneWeek;
           end += _oneWeek;
         }
+
+        // Write the calendar end line.
         writer.WriteLine("END:VCALENDAR");
-        Clipboard.SetText(writer.ToString());
       }
 
+      // Shell to the generated iCalendar file, so that Outlook can import it.
       return ShellToDocument(filename);
-      //return true;
     }
 
+    /// <summary>
+    /// Sanitize the filename by replacing invalid characters with the specified replacement character.
+    /// </summary>
     private static string SanitizeFilename(string filename, char replaceChar) {
       var invalid = Path.GetInvalidFileNameChars();
       return new string(filename.Select(ch => invalid.Contains(ch) ? replaceChar : ch).ToArray());
     }
 
+    /// <summary>
+    /// Write the event series data, including the recurrence information.
+    /// </summary>
     private static void WriteFirstEvent(TextWriter writer, DateTime timestamp, Guid guid, DateTime start, DateTime end, string summary, int weekNumber, int numberOfWeeks) {
       WriteEventStart(writer);
       WriteEventCommon(writer, timestamp, guid, start, end, summary, weekNumber);
@@ -50,28 +73,44 @@ namespace Course_Calendar {
       WriteEventEnd(writer);
     }
 
+    /// <summary>
+    /// Write the individual event overriding data, so that a different week number is set in the summary.
+    /// </summary>
     private static void WriteSubsequentEvent(TextWriter writer, DateTime timestamp, Guid guid, DateTime start, DateTime end, string summary, int weekNumber) {
       WriteEventStart(writer);
       WriteEventCommon(writer, timestamp, guid, start, end, summary, weekNumber);
-      writer.WriteLine("RECURRENCE-ID:{0:yyyyMMddTHHmmss}", start);
+      writer.WriteLine("RECURRENCE-ID:{0}", ToIcsDateTime(start));
       WriteEventEnd(writer);
     }
 
+    /// <summary>
+    /// Write the common event start data.
+    /// </summary>
     private static void WriteEventStart(TextWriter writer) {
       writer.WriteLine("BEGIN:VEVENT");
     }
 
+    /// <summary>
+    /// Write the common event end data.
+    /// </summary>
     private static void WriteEventEnd(TextWriter writer) {
       writer.WriteLine("END:VEVENT");
     }
 
+    /// <summary>
+    /// Write data common to both the event series and the individual event overrides.
+    /// </summary>
     private static void WriteEventCommon(TextWriter writer, DateTime timestamp, Guid guid, DateTime start, DateTime end, string summary, int weekNumber) {
-      writer.WriteLine("DTSTAMP:{0:yyyyMMddTHHmmss}", timestamp);
+      writer.WriteLine("DTSTAMP:{0}", ToIcsDateTime(timestamp));
       writer.WriteLine("UID:{0}", guid);
-      writer.WriteLine("DTSTART:{0:yyyyMMddTHHmmss}", start);
-      writer.WriteLine("DTEND:{0:yyyyMMddTHHmmss}", end);
+      writer.WriteLine("DTSTART:{0}", ToIcsDateTime(start));
+      writer.WriteLine("DTEND:{0}", ToIcsDateTime(end));
       writer.WriteLine(@"DESCRIPTION: \n");
       writer.WriteLine("SUMMARY:{0} - Week {1}", summary, weekNumber);
+    }
+
+    private static string ToIcsDateTime(DateTime dateTime) {
+      return dateTime.ToString("yyyyMMddTHHmmss");
     }
 
     /// <summary>
