@@ -15,15 +15,10 @@ namespace Course_Calendar {
     public FormMain() {
       InitializeComponent();
       uxDateTimePickerStartDate.Value = DateTime.Now;
+      SetToDate();
     }
 
     private void uxButtonAddToCalendar_Click(object sender, EventArgs e) {
-      // Check the course name.
-      if (string.IsNullOrEmpty(uxTextBoxCourseName.Text)) {
-        MessageBoxExt.ShowError("Tou must supply a course name.");
-        return;
-      }
-
       // The course start is the date value from the course start date picker, plus the time value from the course start time picker.
       DateTime start = uxDateTimePickerStartDate.Value.Date + uxDateTimePickerStartTime.Value.TimeOfDay;
 
@@ -31,7 +26,7 @@ namespace Course_Calendar {
       DateTime end = uxDateTimePickerStartDate.Value.Date + uxDateTimePickerEndTime.Value.TimeOfDay;
 
       // Generate and shell to a temp iCalendar file, for Outlook to import.
-      bool success = CourseGenerator.GenerateCourseCalendar(uxTextBoxCourseName.Text, start, end, (int)uxNumericUpDownNumberOfWeeks.Value);
+      bool success = CourseGenerator.GenerateCourseCalendar(uxTextBoxCourseName.Text, start, end, (int)uxNumericUpDownEvery.Value, (int)uxNumericUpDownNumberOfWeeks.Value);
 
       // Show success or fail message.
       if (success) {
@@ -40,6 +35,27 @@ namespace Course_Calendar {
       else {
         MessageBoxExt.ShowError("Failed to create course event file.");
       }
+    }
+
+    private void uxTextBoxCourseName_TextChanged(object sender, EventArgs e) {
+      uxButtonAddToCalendar.Enabled = !string.IsNullOrWhiteSpace(uxTextBoxCourseName.Text);
+    }
+
+    private void SetToDate() {
+      DateTime toDate = uxDateTimePickerStartDate.Value.Date + TimeSpan.FromDays(7 * (int)uxNumericUpDownEvery.Value * ((int)uxNumericUpDownNumberOfWeeks.Value - 1));
+      uxLabelToDate.Text = $"To end date: {toDate.ToString(uxDateTimePickerStartDate.CustomFormat)}";
+    }
+
+    private void uxDateTimePickerStartDate_ValueChanged(object sender, EventArgs e) {
+      SetToDate();
+    }
+
+    private void uxNumericUpDownEvery_ValueChanged(object sender, EventArgs e) {
+      SetToDate();
+    }
+
+    private void uxNumericUpDownNumberOfWeeks_ValueChanged(object sender, EventArgs e) {
+      SetToDate();
     }
 
   }

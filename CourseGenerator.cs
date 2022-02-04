@@ -7,18 +7,16 @@ using System.Windows.Forms;
 namespace Course_Calendar {
   internal static class CourseGenerator {
 
-    // We are assuming that the course runs weekly.
-    private readonly static TimeSpan _oneWeek = TimeSpan.FromDays(7);
-
     /// <summary>
     /// Create a event series for a weekly course by generating and shelling to a temporary iCalendar file for Outlook to import from.
     /// </summary>
     /// <param name="courseName">Course name to use as the event summary. It gets appended with week number information.</param>
-    /// <param name="start">Course start date and time.</param>
-    /// <param name="end">Course end date and time.</param>
+    /// <param name="start">Week 1 start date and time.</param>
+    /// <param name="end">Week 1 end date and time.</param>
+    /// <param name="weekInterval">Number of weeks between occurrences.</param>
     /// <param name="numberOfWeeks">Course length in weeks.</param>
     /// <returns>True on success.</returns>
-    public static bool GenerateCourseCalendar(string courseName, DateTime start, DateTime end, int numberOfWeeks) {
+    public static bool GenerateCourseCalendar(string courseName, DateTime start, DateTime end, int weekInterval, int numberOfOccurrences) {
       // We are creating a temp ics file using the (sanitized) course name.
       string filename = Path.Combine(Path.GetTempPath(), $"{SanitizeFilename(courseName, '_')}.ics");
 
@@ -36,15 +34,16 @@ namespace Course_Calendar {
         writer.WriteLine("PRODID:{0} {1}.{2}", Application.ProductName, productVersion[0], productVersion[1]);
 
         // Write the event series lines.
-        WriteFirstEvent(writer, timestamp, guid, start, end, courseName, 1, numberOfWeeks);
+        WriteFirstEvent(writer, timestamp, guid, start, end, courseName, 1, weekInterval, numberOfOccurrences);
 
         // For all the individual events except the first, write overriding event lines to modify the summary.
-        start += _oneWeek;
-        end += _oneWeek;
-        for (int weekNumber = 2; weekNumber <= numberOfWeeks; weekNumber++) {
-          WriteSubsequentEvent(writer, timestamp, guid, start, end, courseName, weekNumber);
-          start += _oneWeek;
-          end += _oneWeek;
+        TimeSpan interval = TimeSpan.FromDays(7 * weekInterval);
+        start += interval;
+        end += interval;
+        for (int occurrenceNumber = 2; occurrenceNumber <= numberOfOccurrences; occurrenceNumber++) {
+          WriteSubsequentEvent(writer, timestamp, guid, start, end, courseName, occurrenceNumber);
+          start += interval;
+          end += interval;
         }
 
         // Write the calendar end line.
@@ -66,10 +65,10 @@ namespace Course_Calendar {
     /// <summary>
     /// Write the event series data, including the recurrence information.
     /// </summary>
-    private static void WriteFirstEvent(TextWriter writer, DateTime timestamp, Guid guid, DateTime start, DateTime end, string summary, int weekNumber, int numberOfWeeks) {
+    private static void WriteFirstEvent(TextWriter writer, DateTime timestamp, Guid guid, DateTime start, DateTime end, string summary, int weekNumber, int weekInterval, int numberOfOccurrences) {
       WriteEventStart(writer);
       WriteEventCommon(writer, timestamp, guid, start, end, summary, weekNumber);
-      writer.WriteLine("RRULE:FREQ=WEEKLY;COUNT={0};BYDAY={1}", numberOfWeeks, start.ToString("ddd").Substring(0,2).ToUpper());
+      writer.WriteLine("RRULE:FREQ=WEEKLY;COUNT={0};INTERVAL={1};BYDAY={2}", numberOfOccurrences, weekInterval, start.ToString("ddd").Substring(0,2).ToUpper());
       WriteEventEnd(writer);
     }
 
